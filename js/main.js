@@ -12,11 +12,20 @@ var labels = [
   'Sit-ups',
   '2.4 KM run'
 ];
-var colors = [
-  '#f00',
-  '#0f0',
-  '#00f'
+var colorsActive = [
+  '#ff0000',
+  '#00ff00',
+  '#0000ff'
 ]
+
+var colorsInvalid = [
+  '#cccccc',
+  '#dddddd',
+  '#eeeeee'
+]
+
+var colors = colorsActive;
+
 var distBtwPoints = [];
 
 // Create a triangle shaped path
@@ -67,6 +76,8 @@ var drawSegment = function(startAngle, endAngle, lineColor) {
 var drawWidget = function(angles) {
   var startAngle = -90;
   for (var i = 0; i < angles.length; i++) {
+    var ratio = angles[i] / 360;
+    // var colorTint = colors[i];
     var endAngle = startAngle + angles[i];
     drawSegment(startAngle, endAngle, colors[i]);
     startAngle = endAngle + 0;
@@ -164,22 +175,43 @@ function getStationPts(angles) {
 }
 
 function getRunTime(pts) {
-  var min = moment.duration({seconds: 30, minutes: 8}),
-  max = moment.duration({seconds: 10, minutes: 16}),
-  interval = max.subtract(min).as('milliseconds') / 120,
-  result = max.subtract(interval * pts, 'milliseconds');
+  var min = moment.duration({
+      seconds: 30,
+      minutes: 8
+    }),
+    max = moment.duration({
+      seconds: 10,
+      minutes: 16
+    }),
+    interval = max.subtract(min).as('milliseconds') / 120,
+    result = max.subtract(interval * pts, 'milliseconds');
   return moment.utc(result.asMilliseconds()).format('mm:ss');
 }
 
 function getPushUpsNeeded(pts) {
-  var min = 15, max = 60, interval = (max - min) / 25;
-  return min + pts * interval;
+  var min = 15,
+    max = 60,
+    interval = (max - min) / 25;
+  return Math.floor(min + pts * interval);
+}
+
+function getSitupsNeeded(pts) {
+  var min = 14,
+    max = 60,
+    interval = (max - min) / 25;
+  // console.log(pts)
+  return Math.floor(min + pts * interval);
 }
 
 function displayPts(stationPts) {
-  if (!stationPts) return; // if invalid do not show
+  if (!stationPts) {
+    // TODO this can be set to invalid here
+    // colors = colorsInvalid;
+    return; // if invalid do not show
+  }
+  colors = colorsActive;
   $('.stat-push-ups').text(getPushUpsNeeded(stationPts[0]));
-  $('.stat-sit-ups').text(stationPts[1]);
+  $('.stat-sit-ups').text(getSitupsNeeded(stationPts[1]));
   $('.stat-run').text(getRunTime(stationPts[2]));
 }
 
@@ -194,3 +226,10 @@ function onMouseDrag(event) {
   displayPts(stationPts);
   makePointText(labelPoints);
 }
+
+
+// init
+(function() {
+  createTriangle();
+  drawWidget([120,120,120]);
+})();
