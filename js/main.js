@@ -36,7 +36,6 @@ var createCircle = function() {
   // myCircle.fillColor = 'black';
 };
 
-createTriangle();
 // createCircle();
 
 // var start = new Point(view.center.x, view.center.y - 130);
@@ -121,7 +120,6 @@ function getAngles(distances) {
   var ratios = _.map(ratiosInvert, function(rInv) {
     return rInv / ratiosSum;
   });
-  console.log(ratios);
   var angles = _.map(ratiosInvert, function(rInv) {
     return rInv / ratiosSum * 360;
   });
@@ -140,11 +138,59 @@ function makePointText(labelPts) {
   });
 }
 
+var MIN_POINTS = 66;
+
+function getStationPts(angles) {
+  var ratios = _.map(angles, function(angle) {
+    return angle / 360;
+  });
+
+  var eachStationPts = _.map(ratios, function(r, idx) {
+    return Math.floor(r * 66);
+  });
+
+
+  if (eachStationPts[0] > 25) {
+    return false;
+  }
+  if (eachStationPts[1] > 25) {
+    return false;
+  }
+  if (eachStationPts[2] > 50) {
+    return false;
+  }
+  console.log(eachStationPts);
+  return eachStationPts;
+}
+
+function getRunTime(pts) {
+  var min = moment.duration({seconds: 30, minutes: 8}),
+  max = moment.duration({seconds: 10, minutes: 16}),
+  interval = max.subtract(min).as('milliseconds') / 120,
+  result = max.subtract(interval * pts, 'milliseconds');
+  return moment.utc(result.asMilliseconds()).format('mm:ss');
+}
+
+function getPushUpsNeeded(pts) {
+  var min = 15, max = 60, interval = (max - min) / 25;
+  return min + pts * interval;
+}
+
+function displayPts(stationPts) {
+  if (!stationPts) return; // if invalid do not show
+  $('.stat-push-ups').text(getPushUpsNeeded(stationPts[0]));
+  $('.stat-sit-ups').text(stationPts[1]);
+  $('.stat-run').text(getRunTime(stationPts[2]));
+}
+
 function onMouseDrag(event) {
   paper.project.activeLayer.removeChildren()
+  createTriangle();
   var currPt = event.point;
   var dists = calcDistances(currPt, labelPoints);
-  var ratios = getAngles(dists);
-  drawWidget(ratios);
+  var angles = getAngles(dists);
+  drawWidget(angles);
+  var stationPts = getStationPts(angles);
+  displayPts(stationPts);
   makePointText(labelPoints);
 }

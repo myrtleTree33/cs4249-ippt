@@ -4,3 +4,18 @@
   justify-content: center;
   height: 100%;
 }
+
+.btn {
+  padding-left: 2em !important;
+  padding-right: 2em !important;
+  margin-left: 1em; !important;
+  margin-right: 1em; !important;
+}
+
+.text-center {
+  text-align: center;
+}
+
+body {
+  font-size: 1.5em !important;
+}
