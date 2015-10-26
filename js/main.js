@@ -6,6 +6,8 @@ var canvasCenter = {
   y: canvas.height / 2
 }
 
+var minNeeded = [0,0,0];
+
 var labelPoints = [];
 var labels = [
   'Push-ups',
@@ -138,14 +140,16 @@ function getAngles(distances) {
 }
 
 function makePointText(labelPts) {
+  console.log('hihi')
   _.each(labelPts, function(pt, i) {
     new PointText({
       point: pt,
       fillColor: colors[i],
-      fontSize: 14,
-      fontFamily: 'Monospace',
-      content: labels[i]
+      fontSize: 26,
+      fontFamily: 'Lato',
+      content: labels[i] + "\n" + minNeeded[i]
     });
+    console.log("needed: " + minNeeded);
   });
 }
 
@@ -210,9 +214,9 @@ function displayPts(stationPts) {
     return; // if invalid do not show
   }
   colors = colorsActive;
-  $('.stat-push-ups').text(getPushUpsNeeded(stationPts[0]));
-  $('.stat-sit-ups').text(getSitupsNeeded(stationPts[1]));
-  $('.stat-run').text(getRunTime(stationPts[2]));
+  minNeeded[0] = getPushUpsNeeded(stationPts[0]);
+  minNeeded[1] = getSitupsNeeded(stationPts[1]);
+  minNeeded[2] = getRunTime(stationPts[2]);
 }
 
 function onMouseDrag(event) {
