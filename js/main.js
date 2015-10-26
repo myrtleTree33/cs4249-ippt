@@ -44,14 +44,7 @@ var createCircle = function() {
     canvasCenter.x,
     canvasCenter.y), radius);
   myCircle.selected = true;
-  // myCircle.fillColor = 'black';
 };
-
-// createCircle();
-
-// var start = new Point(view.center.x, view.center.y - 130);
-// var through = new Point(view.center.x - 20, view.center.y - 94);
-// var to = new Point(view.center.x - 113, view.center.y - 64);
 
 var makePoint = function(angle) {
   var newAngle = angle * Math.PI / 180;
